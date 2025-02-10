@@ -1,10 +1,21 @@
 import { useState } from 'react';
-import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 
+interface Error {
+  status: number;
+  message: string;
+}
 
-const SearchInput = () => {
-  const [searchInput, setSearchInput] = useState('');
-  const { isLoading, error, status } = useInfiniteScroll({ searchInput });
+interface SearchInputParams {
+  isLoading: boolean;
+  error: Error | null;
+  status: 'success' | 'loading' | 'error';
+  searchInput: string;
+  changeInput: (val: string) => void;
+}
+
+const SearchInput = (params: SearchInputParams) => {
+  const { isLoading, error, status, searchInput, changeInput } = params;
+  
 
   const errorMessage =
     error?.status === 404 ? 'User not found' : 'The connection has failed...';
@@ -28,7 +39,7 @@ const SearchInput = () => {
           aria-label="Username"
           aria-describedby="basic-addon1"
           value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
+          onChange={(e) => changeInput(e.target.value)}
         />
       </div>
       {status === 'error' && (

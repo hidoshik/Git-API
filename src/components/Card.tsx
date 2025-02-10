@@ -24,10 +24,12 @@ const Card = ({ url, description, stargazers_count = 0, updated_at }: Card) => {
         {stargazers_count > 0 && (
           <div>
             {Array.from({ length: stargazers_count })
+              .slice(0, 56)
               .fill(0)
               .map((_, index) => (
                 <Star key={index} />
               ))}
+            {stargazers_count > 56 && '...'}
           </div>
         )}
       </div>

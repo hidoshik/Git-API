@@ -2,8 +2,13 @@ import { useSelector } from 'react-redux';
 import Card from './Card';
 import { repositoriesData } from '../slices/repoSlice';
 
-const CardBox = () => {
-  const {repositories, username} = useSelector(repositoriesData);
+interface CardBoxParams {
+  hasNextPage: boolean;
+}
+
+const CardBox = (params: CardBoxParams) => {
+  const { hasNextPage } = params;
+  const { repositories, username } = useSelector(repositoriesData);
 
   return (
     <div>
@@ -26,7 +31,17 @@ const CardBox = () => {
           }
         )
       )}
-      {repositories.length >= 20 && <div id="scroll" className="">next page ...</div>}
+      {repositories.length >= 20 && hasNextPage && (
+        <div className="d-flex justify-content-center align-items-center">
+          <div
+            id="scroll"
+            className="spinner-border text-primary"
+            role="status"
+          >
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

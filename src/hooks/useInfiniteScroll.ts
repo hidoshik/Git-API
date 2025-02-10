@@ -103,8 +103,10 @@ export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
     observer: IntersectionObserver
   ) => {
     if (entry.isIntersecting) {
-      console.log('heloodiv')
-      getNextPage()
+      getNextPage();
+      if (!hasNextPage) {
+        observer.unobserve(entry.target);
+      }
     }
   };
 
@@ -116,18 +118,5 @@ export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
     observer.observe(div);
   }, [searchInput, isLoading]);
 
-  // useEffect(() => {
-  //   const div = document.getElementById('scroll');
-  //   if (div && hasNextPage && !isLoading) {
-
-  //     const observer = new IntersectionObserver(callback, {
-  //       rootMargin: '0px 0px -100px 0px',
-  //     });
-  //     observer.observe(div);
-
-  //     return () => observer.unobserve(div);
-  //   }
-  // }, [hasNextPage, isLoading, searchInput]);
-
-  return { isLoading, error, status };
+  return { isLoading, error, status, hasNextPage };
 };
