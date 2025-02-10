@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "allowUnusedLabels": false,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "target": "es6",
+    "noImplicitAny": true,
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "strictNullChecks": true,
+    "jsx": "react-jsx",
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["react", "react-dom"],
+    "lib": ["dom", "es6"]
+  }
+}
