@@ -99,29 +99,35 @@ export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
   };
 
   const callback = (
-    entries: IntersectionObserverEntry[],
+    [entry]: IntersectionObserverEntry[],
     observer: IntersectionObserver
   ) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting && !isLoading && hasNextPage) {
-        getNextPage().then(() => {
-          observer.unobserve(entry.target);
-        });
-      }
-    });
+    if (entry.isIntersecting) {
+      console.log('heloodiv')
+      getNextPage()
+    }
   };
 
   useEffect(() => {
     const div = document.getElementById('scroll');
-    if (div && hasNextPage && !isLoading) {
-      const observer = new IntersectionObserver(callback, {
-        rootMargin: '0px 0px -100px 0px',
-      });
-      observer.observe(div);
+    if (!div || isLoading) return;
 
-      return () => observer.unobserve(div);
-    }
-  }, [hasNextPage, isLoading, searchInput]);
+    const observer = new IntersectionObserver(callback);
+    observer.observe(div);
+  }, [searchInput, isLoading]);
+
+  // useEffect(() => {
+  //   const div = document.getElementById('scroll');
+  //   if (div && hasNextPage && !isLoading) {
+
+  //     const observer = new IntersectionObserver(callback, {
+  //       rootMargin: '0px 0px -100px 0px',
+  //     });
+  //     observer.observe(div);
+
+  //     return () => observer.unobserve(div);
+  //   }
+  // }, [hasNextPage, isLoading, searchInput]);
 
   return { isLoading, error, status };
 };
