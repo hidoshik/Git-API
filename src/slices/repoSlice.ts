@@ -36,7 +36,6 @@ const repoSlice = createSlice({
     },
     updateRepoData: (state, { payload }) => {
       state.repositories = [...state.repositories, ...payload];
-      console.log(state.repositories)
     },
   },
 });

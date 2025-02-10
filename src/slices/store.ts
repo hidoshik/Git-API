@@ -1,5 +1,5 @@
-import { configureStore } from "@reduxjs/toolkit";
-import repoReducer from "./repoSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import repoReducer from './repoSlice';
 
 const store = configureStore({
   reducer: {
@@ -7,6 +7,6 @@ const store = configureStore({
   },
 });
 
-export type RootState = ReturnType<typeof store.getState>
+export type RootState = ReturnType<typeof store.getState>;
 
 export default store;

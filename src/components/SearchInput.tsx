@@ -15,7 +15,6 @@ interface SearchInputParams {
 
 const SearchInput = (params: SearchInputParams) => {
   const { isLoading, error, status, searchInput, changeInput } = params;
-  
 
   const errorMessage =
     error?.status === 404 ? 'User not found' : 'The connection has failed...';
