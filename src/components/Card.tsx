@@ -15,7 +15,7 @@ const Card = ({ url, description, stargazers_count = 0, updated_at }: Card) => {
           <h5>Repository Stars: {stargazers_count}</h5>
         </div>
         <h6 className="card-subtitle mb-2 text-body-secondary">
-          {`Last update: ${updated_at}`}
+          {`Last update: ${updated_at && new Date(updated_at).toLocaleString()}`}
         </h6>
         <p className="card-text">{description}</p>
         <a href={url} className="card-link">
