@@ -1,11 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useSelector } from 'react-redux';
 import { useState } from 'react';
 import { JSX } from 'react';
 import SearchInput from './components/SearchInput';
 import CardBox from './components/CardBox';
 import { useInfiniteScroll } from './hooks/useInfiniteScroll';
-import { repositoriesData } from './slices/repoSlice';
 
 const App = (): JSX.Element => {
   const [searchInput, setSearchInput] = useState('');

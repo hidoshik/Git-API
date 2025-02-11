@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 interface Error {
   status: number;
   message: string;

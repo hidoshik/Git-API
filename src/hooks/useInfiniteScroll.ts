@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { Octokit } from '@octokit/rest';
 import {
@@ -47,25 +47,6 @@ export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
   const pageNumber = useRef(1);
   const dispatch = useDispatch();
 
-  const getInitialData = async () => {
-    try {
-      setIsLoading(true);
-
-      const data = await fetchData(searchInput, pageNumber.current);
-      pageNumber.current += 1;
-
-      setStatus('success');
-      dispatch(unsetRepoData());
-      dispatch(setRepoData({ data, searchInput }));
-    } catch (error) {
-      dispatch(unsetRepoData());
-      setStatus('error');
-      setError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (!searchInput) {
       dispatch(unsetRepoData());
@@ -76,12 +57,31 @@ export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
     pageNumber.current = 1;
     setHasNextPage(true);
 
+    const getInitialData = async () => {
+      try {
+        setIsLoading(true);
+
+        const data = await fetchData(searchInput, pageNumber.current);
+        pageNumber.current += 1;
+
+        setStatus('success');
+        dispatch(unsetRepoData());
+        dispatch(setRepoData({ data, searchInput }));
+      } catch (error) {
+        dispatch(unsetRepoData());
+        setStatus('error');
+        setError(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     const timerId = setTimeout(() => getInitialData(), 300);
 
     return () => clearTimeout(timerId);
-  }, [searchInput]);
+  }, [searchInput, dispatch]);
 
-  const getNextPage = async () => {
+  const getNextPage = useCallback(async () => {
     try {
       const data = await fetchData(searchInput, pageNumber.current);
       pageNumber.current += 1;
@@ -96,27 +96,30 @@ export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
       setStatus('error');
       setError(error);
     }
-  };
+  }, [dispatch, searchInput]);
 
-  const callback = (
-    [entry]: IntersectionObserverEntry[],
-    observer: IntersectionObserver
-  ) => {
-    if (entry.isIntersecting) {
-      getNextPage();
-      if (!hasNextPage) {
-        observer.unobserve(entry.target);
+  const callback = useCallback(
+    ([entry]: IntersectionObserverEntry[]) => {
+      if (entry.isIntersecting) {
+        getNextPage();
       }
-    }
-  };
+    },
+    [getNextPage]
+  );
 
   useEffect(() => {
-    const div = document.getElementById('scroll');
-    if (!div || isLoading) return;
+    const intersectionTarget = document.querySelector('#scroll');
+
+    if (!intersectionTarget || isLoading) {
+      return;
+    }
 
     const observer = new IntersectionObserver(callback);
-    observer.observe(div);
-  }, [searchInput, isLoading]);
+
+    observer.observe(intersectionTarget);
+    getNextPage();
+    return () => observer.unobserve(intersectionTarget);
+  }, [isLoading, getNextPage, callback]);
 
   return { isLoading, error, status, hasNextPage };
 };

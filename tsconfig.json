@@ -13,5 +13,6 @@
     "typeRoots": ["./node_modules/@types"],
     "types": ["react", "react-dom"],
     "lib": ["dom", "es6"]
-  }
+  },
+  "include": ["src/**/*"],
 }
