@@ -9,6 +9,15 @@ import {
 
 const octokit = new Octokit();
 
+interface Error {
+  status: number;
+  message: string;
+}
+
+interface UseInfiniteScrollParams {
+  searchInput: string;
+}
+
 const fetchData = async (username: string, page: number) => {
   const response = await octokit.repos.listForUser({
     username,
@@ -26,18 +35,8 @@ const fetchData = async (username: string, page: number) => {
   });
 };
 
-interface Error {
-  status: number;
-  message: string;
-}
-
-interface UseInfiniteScrollParams {
-  searchInput: string;
-}
-
 export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
   const { searchInput } = params;
-
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<'success' | 'loading' | 'error'>(
     'success'
