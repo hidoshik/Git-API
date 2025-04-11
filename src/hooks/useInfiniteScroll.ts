@@ -86,19 +86,10 @@ export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
     }
   }, [dispatch, hasNextPage, isLoading, searchInput]);
 
-  const callback = useCallback(
-    ([entry]: IntersectionObserverEntry[]) => {
-      if (entry.isIntersecting) {
-        getNextPage();
-      }
-    },
-    [getNextPage]
-  );
-
   useEffect(() => {
     const intersectionTarget = document.querySelector('#scroll');
 
-    if (!intersectionTarget || isLoading) {
+    if (!intersectionTarget || isLoading || !hasNextPage) {
       return;
     }
 
@@ -111,7 +102,7 @@ export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
     observerRef.current.observe(intersectionTarget);
 
     return () => observerRef.current?.disconnect();
-  }, [isLoading, getNextPage, callback]);
+  }, [isLoading, getNextPage, hasNextPage]);
 
   return { isLoading, error, status, hasNextPage };
 };
