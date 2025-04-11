@@ -24,9 +24,10 @@ export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
   );
   const [error, setError] = useState<Error | null>(null);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const pageNumber = useRef(1);
 
+  const pageNumber = useRef(1);
   const dispatch = useDispatch();
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
     if (!searchInput) {
@@ -63,7 +64,11 @@ export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
   }, [searchInput, dispatch]);
 
   const getNextPage = useCallback(async () => {
+    if (isLoading || !hasNextPage) return;
+
     try {
+      setIsLoading(true);
+
       const data = await fetchData(searchInput, pageNumber.current);
       pageNumber.current += 1;
 
@@ -76,8 +81,10 @@ export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
     } catch (error) {
       setStatus('error');
       setError(error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [dispatch, searchInput]);
+  }, [dispatch, hasNextPage, isLoading, searchInput]);
 
   const callback = useCallback(
     ([entry]: IntersectionObserverEntry[]) => {
@@ -95,12 +102,15 @@ export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
       return;
     }
 
-    const observer = new IntersectionObserver(callback);
+    observerRef.current = new IntersectionObserver(
+      ([entry]: IntersectionObserverEntry[]) =>
+        entry.isIntersecting && getNextPage(),
+      { threshold: 0.1 }
+    );
 
-    observer.observe(intersectionTarget);
-    getNextPage();
+    observerRef.current.observe(intersectionTarget);
 
-    return () => observer.unobserve(intersectionTarget);
+    return () => observerRef.current?.disconnect();
   }, [isLoading, getNextPage, callback]);
 
   return { isLoading, error, status, hasNextPage };
