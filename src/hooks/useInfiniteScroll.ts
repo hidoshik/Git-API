@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import { Octokit } from '@octokit/rest';
 import {
   setRepoData,
   unsetRepoData,
   updateRepoData,
 } from '../slices/repoSlice';
-
-const octokit = new Octokit();
+import fetchData from '../api/fetchData';
 
 interface Error {
   status: number;
@@ -18,23 +16,6 @@ interface UseInfiniteScrollParams {
   searchInput: string;
 }
 
-const fetchData = async (username: string, page: number) => {
-  const response = await octokit.repos.listForUser({
-    username,
-    page,
-    per_page: 20,
-    headers: {
-      accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-    },
-  });
-
-  return response.data.map((repo) => {
-    const { svn_url, description, stargazers_count, updated_at } = repo;
-    return { url: svn_url, description, stargazers_count, updated_at };
-  });
-};
-
 export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
   const { searchInput } = params;
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +25,7 @@ export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
   const [error, setError] = useState<Error | null>(null);
   const [hasNextPage, setHasNextPage] = useState(true);
   const pageNumber = useRef(1);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -117,6 +99,7 @@ export const useInfiniteScroll = (params: UseInfiniteScrollParams) => {
 
     observer.observe(intersectionTarget);
     getNextPage();
+
     return () => observer.unobserve(intersectionTarget);
   }, [isLoading, getNextPage, callback]);
 

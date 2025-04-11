@@ -7,7 +7,9 @@ interface Card {
   updated_at: string | undefined | null;
 }
 
-const Card = ({ url, description, stargazers_count = 0, updated_at }: Card) => {
+const Card = (params: Card) => {
+  const { url, description, stargazers_count = 0, updated_at } = params;
+
   return (
     <div className="card mb-3">
       <div className="card-body">
